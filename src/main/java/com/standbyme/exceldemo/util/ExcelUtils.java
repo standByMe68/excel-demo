@@ -8,8 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -26,6 +25,37 @@ public class ExcelUtils {
         logger.info("file suffix name:{}", suffix);
         try {
             inputStream = file.getInputStream();
+            if (ExcelContant.XLSX.equals(suffix)) {
+                workbook = new XSSFWorkbook(inputStream);
+            } else if (ExcelContant.XLS.equals(suffix)) {
+                workbook = new HSSFWorkbook(inputStream);
+            } else {
+                throw new FileSuffixException();
+            }
+        } catch (IOException e) {
+            logger.error("获取文件流失败");
+            e.printStackTrace();
+        } catch (FileSuffixException e) {
+            logger.error("文件后缀名不符合要求");
+            e.printStackTrace();
+        }
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return workbook;
+    }
+
+    public static Workbook getWorkbook(File file) {
+        Workbook workbook = null;
+        String name = file.getName();
+        String suffix = name.substring(name.indexOf("."));
+
+        InputStream inputStream = null;
+        logger.info("file suffix name:{}", suffix);
+        try {
+            inputStream = new FileInputStream(file);
             if (ExcelContant.XLSX.equals(suffix)) {
                 workbook = new XSSFWorkbook(inputStream);
             } else if (ExcelContant.XLS.equals(suffix)) {
@@ -124,6 +154,35 @@ public class ExcelUtils {
             logger.info("cell is null");
         }
         return value;
+    }
+
+    public static void setDateInExcel(String fileName, int pageNum, List<Map<String, String>> datas,int startRow,String[] columns) {
+        File file = new File(fileName);
+        Workbook workbook = getWorkbook(file);
+        Sheet sheetAt = workbook.getSheetAt(pageNum);
+        for (int i = 0; i < datas.size(); i++) {
+            Row row = sheetAt.getRow(startRow);
+            if (row == null) {
+                row = sheetAt.createRow(startRow + i);
+            }
+            Map<String, String> map = datas.get(i);
+            map.remove("行数");
+            for (int j = 0; j < map.size(); j++) {
+                Cell cell = row.getCell(j);
+                if (cell == null) {
+                    cell = row.createCell(j);
+                }
+                cell.setCellValue(map.get(columns[j]));
+            }
+        }
+
+        try {
+            OutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

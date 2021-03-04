@@ -16,10 +16,12 @@ public class ExeclTestController {
 
     @ResponseBody
     @PostMapping("/sheetValue")
-    public List<Map<String,String>> upload(@RequestParam("file") MultipartFile file) {
+    public String upload(@RequestParam("file") MultipartFile file) {
         String[] columns = new String[]{"123", "234", "456"};
         Workbook workbook = ExcelUtils.getWorkbook(file);
-        return ExcelUtils.getSheetValue(workbook, columns, 3, 0);
+        List<Map<String, String>> sheetValue = ExcelUtils.getSheetValue(workbook, columns, 3, 0);
+        ExcelUtils.setDateInExcel("D:\\临时文件夹\\报警定义导入模板20210220(1).xlsx",0,sheetValue,4,columns);
+        return "hello word";
     }
 
     @RequestMapping("/test")
