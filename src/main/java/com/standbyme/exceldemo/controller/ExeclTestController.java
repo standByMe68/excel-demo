@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public class ExeclTestController {
         String[] columns = new String[]{"123", "234", "456"};
         Workbook workbook = ExcelUtils.getWorkbook(file);
         List<Map<String, String>> sheetValue = ExcelUtils.getSheetValue(workbook, columns, 3, 0);
-        ExcelUtils.setDateInExcel("D:\\临时文件夹\\报警定义导入模板20210220(1).xlsx",0,sheetValue,4,columns);
+        ExcelUtils.setDateInExcel("D:\\临时文件夹\\报警定义导入模板20210220(1).xlsx",0,sheetValue,5,columns);
         return "hello word";
     }
 
