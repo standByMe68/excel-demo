@@ -1,0 +1,5 @@
+spring:
+  thymeleaf:
+    cache: false #关闭thymeleaf缓存
+    prefix: classpath:/templates/ # 设置前缀
+    suffix: .html # 设置后缀
